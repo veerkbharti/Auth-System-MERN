@@ -18,14 +18,8 @@ const userSchema = new mongoose.Schema(
     },
     password: String,
     otp: {
-      otpNumber: {
-        type: String,
-        required: true,
-      },
-      expiresAt: {
-        type: Date,
-        required: true,
-      },
+      otpNumber: String,
+      expiresAt: Date,
     },
   },
   { timestamps: true }
@@ -45,7 +39,6 @@ userSchema.methods.getJWTToken = function () {
     expiresIn: process.env.JWT_EXPIRE,
   });
 };
-
 
 const User = mongoose.model("User", userSchema);
 

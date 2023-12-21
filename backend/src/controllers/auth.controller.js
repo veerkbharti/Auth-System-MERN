@@ -3,7 +3,6 @@ import ErrorHandler from "../utils/errorHandler.js";
 import otpGenerator from "otp-generator";
 import axios from "axios";
 
-
 export const customSignup = async (req, res, next) => {
   try {
     const { email, password } = req.body;
@@ -53,22 +52,18 @@ export const login = async (req, res, next) => {
     });
 
     const response = await axios.get(
-      `https://www.fast2sms.com/dev/bulkV2?authorization=${
-        process.env.FAST_2_SMS_API_KEY
-      }&route=otp&variables_values=${otp}&flash=0&numbers=${mobile}`
+      `https://www.fast2sms.com/dev/bulkV2?authorization=${process.env.FAST_2_SMS_API_KEY}&route=otp&variables_values=${otp}&flash=0&numbers=${mobile}`
     );
 
     // const data = response.json();
 
     if (response.data.return === true) {
-      const token = await user.getJWTToken();
       user.otp = { otpNumber: otp, expiresAt: new Date(Date.now() + 600000) };
       await user.save();
 
       res.status(200).json({
         success: true,
         message: "Otp sent to your mobile number",
-        token,
       });
     }
     res.status(411).json({
@@ -81,3 +76,27 @@ export const login = async (req, res, next) => {
   }
 };
 
+export const otpVerify = async (req, res, next) => {
+  try {
+    const { mobile, otp } = req.body;
+    const user = await User.findOne({ mobile, "otp.otpNumber": otp });
+
+    if (!user) return next(new ErrorHandler(`Invalid OTP`, 401));
+
+    if (user.otp.expiresAt < new Date())
+      return next(new ErrorHandler(`OTP expired`, 401));
+
+    if (user.otp.otpNumber == otp) {
+      const token = await user.getJWTToken();
+      user.otp = { otpNumber: "", expiresAt: new Date() };
+      await user.save();
+
+      res.status(200).json({ message: "OTP verified successfully", token });
+    } else {
+      res.status(401).json({ message: "Invalid OTP" });
+    }
+  } catch (error) {
+    console.log(error);
+    next();
+  }
+};

@@ -1,5 +1,10 @@
 import { Router } from "express";
-import { customSignup, googleSignup, login } from "../controllers/auth.controller.js";
+import {
+  customSignup,
+  googleSignup,
+  login,
+  otpVerify,
+} from "../controllers/auth.controller.js";
 import passport from "passport";
 
 const router = Router();
@@ -18,5 +23,6 @@ router
     googleSignup
   );
 router.route("/auth/login").post(login);
+router.route("/auth/verify-otp").post(otpVerify);
 
 export default router;
