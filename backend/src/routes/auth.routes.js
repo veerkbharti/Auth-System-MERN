@@ -1,5 +1,5 @@
 import { Router } from "express";
-import { customSignup, googleSignup } from "../controllers/auth.controller.js";
+import { customSignup, googleSignup, login } from "../controllers/auth.controller.js";
 import passport from "passport";
 
 const router = Router();
@@ -17,5 +17,6 @@ router
     passport.authenticate("google", { failureRedirect: "/", session: false }),
     googleSignup
   );
+router.route("/auth/login").post(login);
 
 export default router;
