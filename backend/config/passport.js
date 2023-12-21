@@ -2,7 +2,6 @@ import User from "../src/models/user.model.js";
 import { Strategy as GoogleStrategy } from "passport-google-oauth20";
 
 const initializePassport = (passport) => {
-
   // GoogleStrategy for Google OAuth authentication
   passport.use(
     new GoogleStrategy(
@@ -23,7 +22,7 @@ const initializePassport = (passport) => {
 
           const newUser = new User({
             email: profile.emails[0].value,
-            mobile: "1234567890",
+            name: `${profile.name.givenName} ${profile.name.familyName}`,
           });
 
           await newUser.save();
