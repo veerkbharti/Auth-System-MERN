@@ -12,10 +12,7 @@ const userSchema = new mongoose.Schema(
       required: true,
       unique: true,
     },
-    mobile: {
-      type: String,
-      unique: true,
-    },
+    mobile: String,
     password: String,
     otp: {
       otpNumber: String,
