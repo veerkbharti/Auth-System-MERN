@@ -1,5 +1,6 @@
 import User from "../models/user.model.js";
 import ErrorHandler from "../utils/errorHandler.js";
+import jwt from "jsonwebtoken";
 
 export const customSignup = async (req, res, next) => {
   try {
@@ -16,6 +17,20 @@ export const customSignup = async (req, res, next) => {
     user = await User.create(req.body);
 
     res.json({ success: true, message: "User signup successfully" });
+  } catch (error) {
+    console.log(error);
+    return next();
+  }
+};
+
+export const googleSignup = async (req, res, next) => {
+  try {
+    const token = jwt.sign(
+      { email: req.user.email, mobile: req.user.mobile },
+      process.env.JWT_SECRET,
+      { expiresIn: process.env.JWT_EXPIRE }
+    );
+    res.redirect(`http://localhost:3000?token=${token}`);
   } catch (error) {
     console.log(error);
     return next();
